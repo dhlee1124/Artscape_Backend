@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const app = express();
-const PORT = 3000; //Node.js 서버
+const PORT = process.env.PORT || 3000;
 const DB_PORT = 3306;
 
 app.use(express.json());
@@ -18,11 +19,20 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/uploads', express.static('uploads'));
 
 const db = mysql.createConnection({
-  host: 'localhost',
-  port: DB_PORT,
-  user: 'root',
-  password: '2727',
-  database: 'user_management',
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+// 데이터베이스 연결 테스트
+db.connect((err) => {
+  if (err) {
+    console.error('데이터베이스 연결 오류:', err);
+    return;
+  }
+  console.log('데이터베이스에 연결되었습니다.');
 });
 
 // 프로필 업로드
